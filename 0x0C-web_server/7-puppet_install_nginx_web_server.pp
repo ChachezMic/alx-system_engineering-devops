@@ -1,5 +1,5 @@
 # Install and configure nginx
-package { 'jfryman-nginx':
+package { 'nginx':
   ensure => installed,
 }
 
