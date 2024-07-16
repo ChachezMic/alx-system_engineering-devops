@@ -1,22 +1,27 @@
-# Install and configure nginx
+#Time to practice configuring your server with Puppet! Just as 
+#you did before, we’d like you to install and configure an Nginx
+#server using Puppet instead of Bash. To save time and effort, you
+#should also include resources in your manifest to perform a 301
+#redirect when querying /redirect_me.
+
+
+# Install Nginx with puppet
 package { 'nginx':
   ensure => installed,
 }
 
-include nginx
-
-class { 'nginx':
-  manage_repo    => true,
-  package_source => 'nginx-stable',
+file_line { 'install':
+  ensure => 'present',
+  path   => '/etc/nginx/sites-available/default',
+  after  => 'listen 80 default_server;',
+  line   => 'rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;',
 }
 
-nginx::resource::server { '100.26.249.166':
-  listen_port      => 80,
-  www_root         => '/var/www/html/',
-  vhost_cfg_append => { 'rewrite' => '^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent' },
+file { '/var/www/html/index.html':
+  content => 'Hello World!',
 }
 
-file { 'index':
-  path    => '/var/www/html/index.nginx-debian.html',
-  content => 'Hello world!',
+service { 'nginx':
+  ensure  => running,
+  require => Package['nginx'],
 }
