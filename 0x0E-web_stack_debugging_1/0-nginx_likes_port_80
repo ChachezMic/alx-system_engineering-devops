@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
-# Configure nginx for connection on port 80
-sudo sed -i 's/8080 default_server/80 default_server/g' /etc/nginx/sites-enabled/default
-sudo service nginx restart
+# Fixes server bug
+chmod 644 /etc/nginx/nginx.conf
+sed -Ei 's/\s*#?\s*user .*/user nginx;/' /etc/nginx/nginx.conf
+sed -Ei 's/(listen (\[::\]:)?80) /\180 /' /etc/nginx/sites-enabled/default
+pkill apache2
+# restart
+su nginx -s /bin/bash -c 'service nginx restart'
